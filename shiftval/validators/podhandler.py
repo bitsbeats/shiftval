@@ -5,7 +5,10 @@ from shiftval.errors import LintError
 from shiftval.validators.for_ import pdb_for, velero_for, route_for
 
 
-@validator('Deployment', 'StatefulSet')
+POD_HANDLERS = ('Deployment', 'StatefulSet')
+
+
+@validator(*POD_HANDLERS)
 def podhandler_git_sha(yml: object):
     """
     This resource requires a git-sha annotation to prevent issues on rolling
@@ -29,7 +32,7 @@ def podhandler_git_sha(yml: object):
         raise LintError(f'git-sha missing on {ident}')
 
 
-@validator('Deployment', 'StatefulSet')
+@validator(*POD_HANDLERS)
 def podhandler_pod_disruption_budget(yml: object):
     """require a podhandler for every deployment/statefulset."""
     matches = json_path('spec.template.metadata.labels').find(yml)
@@ -39,7 +42,7 @@ def podhandler_pod_disruption_budget(yml: object):
     return ([], must_validators)
 
 
-@validator('Deployment', 'StatefulSet')
+@validator(*POD_HANDLERS)
 def podhandler_oauth(yml: object):
     """require a route with reencrypt policy if oauth was found enabled."""
     matches = json_path('spec.template.spec.containers.[*]').find(yml)
