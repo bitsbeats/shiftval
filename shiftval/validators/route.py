@@ -48,6 +48,8 @@ def route_monitoring(yml: object):
 @validator('Route')
 def route_warn_public(yml: object):
     """Warn for every public route."""
-    matches = json_path('metadata.annotations."acme.openshift.io/exposer"')
+    matches = json_path(
+        'metadata.annotations."acme.openshift.io/exposer"'
+    ).find(yml)
     if matches:
         click.secho(f'* public route found: {object_ident(yml)}', fg='yellow')
