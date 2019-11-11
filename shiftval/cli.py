@@ -1,6 +1,7 @@
 import sys
 import typing
 from contextlib import contextmanager
+from inspect import cleandoc
 
 import click
 import yaml
@@ -40,7 +41,9 @@ def run():
                 except LintError:
                     pass
         if must_validators:
-            missing = [v.__doc__ or v.__name__ for v in must_validators]
+            missing = [cleandoc(v.__doc__) or v.__name__
+                       for v in must_validators]
+            missing = missing.join('\n---\n')
             raise LintError(f'required validators are not provided: {missing}')
         validators = new_validators
     click.secho('-' * 40)
